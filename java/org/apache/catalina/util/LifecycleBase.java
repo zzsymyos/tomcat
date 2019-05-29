@@ -127,13 +127,17 @@ public abstract class LifecycleBase implements Lifecycle {
 
     @Override
     public final synchronized void init() throws LifecycleException {
+        //1.状态检查
         if (!state.equals(LifecycleState.NEW)) {
             invalidTransition(Lifecycle.BEFORE_INIT_EVENT);
         }
 
         try {
+            //2.触发INITIALIZING事件监听器
             setStateInternal(LifecycleState.INITIALIZING, null, false);
+            //3.调用具体子类的初始化方法
             initInternal();
+            //4.触发INITIALIZED事件监听器
             setStateInternal(LifecycleState.INITIALIZED, null, false);
         } catch (Throwable t) {
             handleSubClassException(t, "lifecycleBase.initFail", toString());
@@ -143,7 +147,8 @@ public abstract class LifecycleBase implements Lifecycle {
 
     /**
      * Sub-classes implement this method to perform any instance initialisation
-     * required.
+     * required.  子类实现自己的初始化 启动 和 停止方法，为了避免跟基类同名，把具体的子类
+     * 实现都统一加上internal
      *
      * @throws LifecycleException If the initialisation fails
      */

@@ -665,11 +665,11 @@ public class Catalina {
      * Start a new server instance.
      */
     public void start() {
-
+        //1. 如果持有的 Server 实例为空，就解析server.xml创建出来
         if (getServer() == null) {
             load();
         }
-
+        //2.创建失败则退出
         if (getServer() == null) {
             log.fatal("Cannot start server. Server instance is not configured.");
             return;
@@ -677,7 +677,7 @@ public class Catalina {
 
         long t1 = System.nanoTime();
 
-        // Start the new server
+        // Start the new server 3.启动server
         try {
             getServer().start();
         } catch (LifecycleException e) {
@@ -695,7 +695,8 @@ public class Catalina {
             log.info("Server startup in " + ((t2 - t1) / 1000000) + " ms");
         }
 
-        // Register shutdown hook
+        //4.创建并注册关闭钩子 Register shutdown hook
+        // 关闭钩子作用是当jvm关闭时需要做清理工作，可以向jvm注册一个钩子，其实就是一个线程，jvm在停止之前会尝试执行run方法
         if (useShutdownHook) {
             if (shutdownHook == null) {
                 shutdownHook = new CatalinaShutdownHook();
@@ -711,7 +712,7 @@ public class Catalina {
                         false);
             }
         }
-
+        //5.用await方法方法监听停止请求
         if (await) {
             await();
             stop();
@@ -852,6 +853,7 @@ public class Catalina {
         @Override
         public void run() {
             try {
+                //sever的stop方法，清理和释放所有资源
                 if (getServer() != null) {
                     Catalina.this.stop();
                 }

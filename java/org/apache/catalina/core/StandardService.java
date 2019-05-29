@@ -101,6 +101,7 @@ public class StandardService extends LifecycleMBeanBase implements Service {
 
     /**
      * Mapper listener.
+     * 热部署，mapperListener是一个监听器，监听容器变化并更新到mapper里保证热部署，这是观察者模式
      */
     protected final MapperListener mapperListener = new MapperListener(this);
 
@@ -414,9 +415,11 @@ public class StandardService extends LifecycleMBeanBase implements Service {
 
         if(log.isInfoEnabled())
             log.info(sm.getString("standardService.start.name", this.name));
+        //1.触发启动监听器
         setState(LifecycleState.STARTING);
 
         // Start our defined Container first
+        //2.先启动engine容器，engine会启动它的子容器
         if (engine != null) {
             synchronized (engine) {
                 engine.start();
@@ -429,9 +432,11 @@ public class StandardService extends LifecycleMBeanBase implements Service {
             }
         }
 
+        //3启动mapper监听器
         mapperListener.start();
 
         // Start our defined Connectors second
+        //4.启动连接器，连接器会启动它的子组件，比如endpoint
         synchronized (connectorsLock) {
             for (Connector connector: connectors) {
                 // If it has already failed, don't try and start it

@@ -347,19 +347,22 @@ public final class StandardServer extends LifecycleMBeanBase implements Server {
         service.setServer(this);
 
         synchronized (servicesLock) {
+            //1.创建长度+1的数组
             Service results[] = new Service[services.length + 1];
+            //2.老数组数据拷贝过去
             System.arraycopy(services, 0, results, 0, services.length);
             results[services.length] = service;
             services = results;
 
             if (getState().isAvailable()) {
                 try {
+                    //3.启动service组件
                     service.start();
                 } catch (LifecycleException e) {
                     // Ignore
                 }
             }
-
+            //4.触发监听器事件
             // Report this property change to interested listeners
             support.firePropertyChange("service", null, service);
         }
@@ -417,6 +420,7 @@ public final class StandardServer extends LifecycleMBeanBase implements Server {
         }
 
         // Set up a server socket to wait on
+        //1.创建一个8005端口监听的socket
         try {
             awaitSocket = new ServerSocket(port, 1,
                     InetAddress.getByName(address));
@@ -431,6 +435,7 @@ public final class StandardServer extends LifecycleMBeanBase implements Server {
             awaitThread = Thread.currentThread();
 
             // Loop waiting for a connection and a valid command
+            //2.循环接收关闭的请求
             while (!stopAwait) {
                 ServerSocket serverSocket = awaitSocket;
                 if (serverSocket == null) {
@@ -500,6 +505,7 @@ public final class StandardServer extends LifecycleMBeanBase implements Server {
                 }
 
                 // Match against our command string
+                //3.读取到的命令是shutdown就退出循环
                 boolean match = command.toString().equals(shutdown);
                 if (match) {
                     log.info(sm.getString("standardServer.shutdownViaPort"));
