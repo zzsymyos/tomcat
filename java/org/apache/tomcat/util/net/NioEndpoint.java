@@ -246,14 +246,14 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel,SocketChannel> 
             nioChannels = new SynchronizedStack<>(SynchronizedStack.DEFAULT_SIZE,
                     socketProperties.getBufferPool());
 
-            // Create worker collection
+            //1.创建线程池 Create worker collection
             if ( getExecutor() == null ) {
                 createExecutor();
             }
 
             initializeConnectionLatch();
 
-            // Start poller threads
+            // Start poller threads todo
             pollers = new Poller[getPollerThreadCount()];
             for (int i=0; i<pollers.length; i++) {
                 pollers[i] = new Poller();
@@ -263,6 +263,7 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel,SocketChannel> 
                 pollerThread.start();
             }
 
+            //2.调用通用抽象接口，开启接收请求线程
             startAcceptorThreads();
         }
     }

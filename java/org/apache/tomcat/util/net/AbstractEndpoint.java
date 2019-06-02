@@ -1112,11 +1112,11 @@ public abstract class AbstractEndpoint<S,U> {
 
 
     protected final void startAcceptorThreads() {
-        //启动时，拿到可开启接收线程的数量
+        //1、启动时，拿到可开启接收线程的数量
         int count = getAcceptorThreadCount();
         acceptors = new ArrayList<>(count);
 
-        //循环批量启动线程
+        //2、循环批量启动线程
         for (int i = 0; i < count; i++) {
             Acceptor<U> acceptor = new Acceptor<>(this);
             String threadName = getName() + "-Acceptor-" + i;
