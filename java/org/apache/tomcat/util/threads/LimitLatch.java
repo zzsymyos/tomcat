@@ -106,6 +106,7 @@ public class LimitLatch {
 
 
     /**
+     * 线程调用这个方法来获得新连接的许可，线程可能被阻塞
      * Acquires a shared latch if one is available or waits for one if no shared
      * latch is current available.
      * @throws InterruptedException If the current thread is interrupted
@@ -118,6 +119,7 @@ public class LimitLatch {
     }
 
     /**
+     * 调用这个方法来释放一个链接许可，那么前面阻塞的线程可能被唤醒
      * Releases a shared latch, making it available for another thread to use.
      * @return the previous counter value
      */

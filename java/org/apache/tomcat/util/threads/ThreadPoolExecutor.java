@@ -164,13 +164,17 @@ public class ThreadPoolExecutor extends java.util.concurrent.ThreadPoolExecutor 
     public void execute(Runnable command, long timeout, TimeUnit unit) {
         submittedCount.incrementAndGet();
         try {
+            //调用java原生的线程池执行
             super.execute(command);
         } catch (RejectedExecutionException rx) {
+            //
             if (super.getQueue() instanceof TaskQueue) {
                 final TaskQueue queue = (TaskQueue)super.getQueue();
                 try {
+                    // 尝试继续把任务放到任务队列里
                     if (!queue.force(command, timeout, unit)) {
                         submittedCount.decrementAndGet();
+                        // 如果缓冲池也满了，插入失败执行拒绝策略
                         throw new RejectedExecutionException("Queue capacity is full.");
                     }
                 } catch (InterruptedException x) {

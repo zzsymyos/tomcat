@@ -68,11 +68,15 @@ public class TaskQueue extends LinkedBlockingQueue<Runnable> {
     public boolean offer(Runnable o) {
       //we can't do any checks
         if (parent==null) return super.offer(o);
+        // 如果线程数达到最大值，不能创建新线程了，只能把任务添加到队列
         //we are maxed out on threads, simply queue the object
         if (parent.getPoolSize() == parent.getMaximumPoolSize()) return super.offer(o);
+        // 到这里表名线程数大于核心线程数小于最大线程数了，要不要创建线程分两种情况：
         //we have idle threads, just add it to the queue
+        // 1.如果已提交的线程数小于当前线程，表示还有空闲线程，无需创建线程
         if (parent.getSubmittedCount()<(parent.getPoolSize())) return super.offer(o);
         //if we have less threads than maximum force creation of a new thread
+        // 2.如果已提交的线程数大于当前线程数，线程不够则返回false 去创建新线程
         if (parent.getPoolSize()<parent.getMaximumPoolSize()) return false;
         //if we reached here, we need to add it to the queue
         return super.offer(o);
