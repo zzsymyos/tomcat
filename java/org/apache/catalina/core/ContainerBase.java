@@ -1145,6 +1145,7 @@ public abstract class ContainerBase extends LifecycleMBeanBase
         if (!getState().isAvailable())
             return;
 
+        //1.执行容器cluster周期性任务
         Cluster cluster = getClusterInternal();
         if (cluster != null) {
             try {
@@ -1154,6 +1155,8 @@ public abstract class ContainerBase extends LifecycleMBeanBase
                         cluster), e);
             }
         }
+
+        //2.执行容器realm周期性任务
         Realm realm = getRealmInternal();
         if (realm != null) {
             try {
@@ -1162,6 +1165,8 @@ public abstract class ContainerBase extends LifecycleMBeanBase
                 log.warn(sm.getString("containerBase.backgroundProcess.realm", realm), e);
             }
         }
+
+        //3.执行容器valve周期性任务
         Valve current = pipeline.getFirst();
         while (current != null) {
             try {
@@ -1171,6 +1176,8 @@ public abstract class ContainerBase extends LifecycleMBeanBase
             }
             current = current.getNext();
         }
+
+        //4.
         fireLifecycleEvent(Lifecycle.PERIODIC_EVENT, null);
     }
 

@@ -5416,6 +5416,7 @@ public class StandardContext extends ContainerBase
         if (!getState().isAvailable())
             return;
 
+        //WebappLoader 周期性的检查 WEB-INF/classes 和 WEB-INF/lib 目录下的类文件
         Loader loader = getLoader();
         if (loader != null) {
             try {
@@ -5425,6 +5426,7 @@ public class StandardContext extends ContainerBase
                         "standardContext.backgroundProcess.loader", loader), e);
             }
         }
+        //Session 管理器周期性的检查是否有过期的 Session
         Manager manager = getManager();
         if (manager != null) {
             try {
@@ -5435,6 +5437,7 @@ public class StandardContext extends ContainerBase
                         e);
             }
         }
+        // 周期性的检查静态资源是否有变化
         WebResourceRoot resources = getResources();
         if (resources != null) {
             try {
@@ -5455,6 +5458,7 @@ public class StandardContext extends ContainerBase
                         resources), e);
             }
         }
+        // 调用父类 ContainerBase 的 backgroundProcess 方法
         super.backgroundProcess();
     }
 

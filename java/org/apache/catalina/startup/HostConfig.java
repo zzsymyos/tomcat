@@ -1614,10 +1614,12 @@ public class HostConfig implements LifecycleListener {
 
         if (host.getAutoDeploy()) {
             // Check for resources modification to trigger redeployment
+            // 检查这个 Host 下所有已经部署的 Web 应用
             DeployedApplication[] apps =
                 deployed.values().toArray(new DeployedApplication[0]);
             for (int i = 0; i < apps.length; i++) {
                 if (!isServiced(apps[i].name))
+                    // 检查 Web 应用目录是否有变化
                     checkResources(apps[i], false);
             }
 
@@ -1627,6 +1629,7 @@ public class HostConfig implements LifecycleListener {
             }
 
             // Hotdeploy applications
+            // 执行部署
             deployApps();
         }
     }
